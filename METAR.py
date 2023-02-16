@@ -9,7 +9,7 @@ import neopixel
 ###########################################################################
 
 # Choose pin lights are connected to, along with total number of lights
-#pixels = neopixel.NeoPixel(board.D18, 44) 
+pixels = neopixel.NeoPixel(board.D18, 44) 
 
 # Choose amount of time you would like the map to wait before
 # another reading in seconds, at least 10 mins to avoid spam filters
@@ -30,48 +30,51 @@ urls=[['https://metar-taf.com/KPVC','https://metar-taf.com/KHYA','https://metar-
 
 ###########################################################################
 
-#pixels.fill((0,0,0)) # Start all lights as off    
+pixels.fill((0,0,0)) # Start all lights as off    
 
 def scrape(url1,url2):
     # Function that scrapes HTML data   
+    t1 = time.perf_counter() # Keep Track of time
     r = requests.get(url1)  # Access HTML of web page
     html = r.text
     soup = BeautifulSoup(html, 'html.parser')
     Reading = (soup.find(class_= 'mb-0 align-self-center'))  # Location of data we want to scrape
     RL =(Reading.text)
     if RL == 'VFR':
-        #pixels[url2] = (255,0,0)
+        pixels[url2] = (255,0,0)
         print("VFR")
     elif RL == 'MVFR':
-        #pixels[url2] = (0,0,255)
+        pixels[url2] = (0,0,255)
         print("MVFR")
     elif RL == 'IFR':
-        #pixels[url2] = (0,255,0)
+        pixels[url2] = (0,255,0)
         print("IFR")
     elif RL =='LIFR':
-        #pixels[url2] = (0,255,255)
+        pixels[url2] = (0,255,255)
         print("LIFR")
+    t2 = time.perf_counter()
+    print("Network Latency: " + str(t2-t1)+ " s")  # Display Network Latency
 
 while True:
     # Loop to update map
-    sleep_time = update_interval / int(len(urls[0]))
     try:
-        for count, element in enumerate(urls):  # Scan through array of aiport info
-            if count > 0:  # Only need to scan through array once since airport info is corresponding
-                pass
-            else:
-                for airport_count, airport in enumerate(element):  # Use predetermined LED numbers and URL to scrape data
-                    try:
-                        print("Data Scrape at: " + airport + " | EST Sleep time: " +str(sleep_time))
-                        scrape(urls[0][airport_count],[1][airport_count])
-                        time.sleep(sleep_time)
-                    except:
-                        # Execute in case of error at specific URL
-                        print("Error in finding data, skipping...")
-                        time.sleep(sleep_time)
+        addresses = urls[0]
 
-        print('End of loop, going to sleep... ')
+        for airport_count, airport in enumerate(addresses):  # Use predetermined LED numbers and URL to scrape data
+            try:
 
+                current_URL = urls[0][airport_count]
+                current_LED = urls[1][airport_count]
+                print("Data Scrape at: " + current_URL + " | LED: "+ str(current_LED))
+                scrape(current_URL,current_LED)
+                time.sleep(0.5)  # Avoid rapid website searching which usually causes errors
+
+            except:
+                # Execute in case of error at specific URL
+                print("Error in finding data, skipping...")
+
+        print("Cycle Completed")
+        time.sleep(update_interval)
 
     except:
         # Execute in case of any unknown, unforseen error
