@@ -34,7 +34,7 @@ pixels.fill((0,0,0)) # Start all lights as off
 
 def scrape(url1,url2):
     # Function that scrapes HTML data   
-    t1 = time.perf_counter() # Keep Track of time
+    t1 = time.perf_counter() # Start time
     r = requests.get(url1)  # Access HTML of web page
     html = r.text
     soup = BeautifulSoup(html, 'html.parser')
@@ -52,7 +52,7 @@ def scrape(url1,url2):
     elif RL =='LIFR':
         pixels[url2] = (0,255,255)
         print("LIFR")
-    t2 = time.perf_counter()
+    t2 = time.perf_counter()   # Stop time
     print("Network Latency: " + str(t2-t1)+ " s")  # Display Network Latency
 
 while True:
