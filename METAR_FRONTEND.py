@@ -1,8 +1,7 @@
 # General Imports #####################################################
 
-from __future__ import print_function
-from time import sleep,localtime,asctime
-import os.path
+
+from time import sleep
 import neopixel
 import board
 
