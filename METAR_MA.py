@@ -3,7 +3,10 @@
 
 from __future__ import print_function
 import os.path
-from time import sleep,localtime,asctime
+from time import sleep
+import neopixel
+import board
+
 
 # Webdriver Imports ###################################################
 
@@ -41,18 +44,12 @@ urls=['https://metar-taf.com/KPVC','https://metar-taf.com/KHYA','https://metar-t
 'https://metar-taf.com/KAQW','https://metar-taf.com/KPSF','https://metar-taf.com/KPOU','https://metar-taf.com/KDXR',
 'https://metar-taf.com/KHVN']
 
-cell = "C"
-airport_cells = []
+
 interval = 600
+# Choose pin lights are connected to, along with total number of lights
+pixels = neopixel.NeoPixel(board.D18, 44) 
+pixels.fill((0,0,0)) # Start all lights as off
 
-
-for i in range(len(urls)):
-    num = i + 2
-    temp = cell + str(num)
-    airport_cells.append(temp)
-
-
-###########################################################################
 
 def init():
     # Create Web Driver using options to remain under the radar
@@ -76,37 +73,37 @@ def init():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
 
 
+
+
 def main():
-    current_status = []
 
-    for i in urls:
-        driver.get(i)
+    for i in range(len(urls)):
+
+        airport_path = urls[i]
+        driver.get(airport_path)
         try:
-            stat = waitToLoad_storage("XPATH","/html/body/div[3]/div/div/div[3]/div[1]/div/div[1]/h3").text
-            current_status.append(stat)
-        except:
-            current_status.append("")
-    driver.quit()
-    return current_status
+            current = waitToLoad_storage("XPATH","/html/body/div[3]/div/div/div[3]/div[1]/div/div[1]/h3").text
+        driver.quit()
 
-def upload(stats):
-
-    scope = ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/spreadsheets',
-         'https://www.googleapis.com/auth/drive.file',
-         'https://www.googleapis.com/auth/drive']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name('frontend.json',scope)
-
-    # intitialize the authorization object            
-    gc = gspread.authorize(credentials)
-    # Open Google Sheets file
-    sheet = gc.open('METARMAP').sheet1
-    for i in range(len(stats)):
         try:
-            sheet.update(str(airport_cells[i]),str(stats[i]))
+                if current == 'VFR':
+                    pixels[i] = (255,0,0)
+                    print("VFR")
+                elif current == 'MVFR':
+                    pixels[i] = (0,0,255)
+                    print("MVFR")
+                elif current == 'IFR':
+                    pixels[i] = (0,255,0)
+                    print("IFR")
+                elif current =='LIFR':
+                    pixels[i] = (0,255,255)
+                    print("LIFR")
+
         except:
             print('Error Occurred')
-    return
+            pixels[i] = (0,0,0)
+
+
 
 def waitToLoad_click(bytype,id):
     # Wait for <a> to load and then click
@@ -159,14 +156,9 @@ def waitToLoad_storage(bytype,id):
                 sleep(1)
 
 
-
-
-
-
 if __name__ == "__main__":
     # Loop to constantly update google sheet
     init()
     while True:
-        stats = main()
-        upload(stats)
+        main()
         sleep(interval)
