@@ -26,13 +26,6 @@ from selenium.webdriver.common.by import By
 
 #######################################################################
 
-# Google Imports ######################################################
-
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
-#######################################################################
-
 # URL's that bot pulls from
 urls=['https://metar-taf.com/KPVC','https://metar-taf.com/KHYA','https://metar-taf.com/KACK','https://metar-taf.com/KMVY',
 'https://metar-taf.com/KPYM','https://metar-taf.com/KEWB','https://metar-taf.com/KOWD','https://metar-taf.com/KBOS',
@@ -81,8 +74,8 @@ def main():
 
         airport_path = urls[i]
         driver.get(airport_path)
-        try:
-            current = waitToLoad_storage("XPATH","/html/body/div[3]/div/div/div[3]/div[1]/div/div[1]/h3").text
+
+        current = waitToLoad_storage("XPATH","/html/body/div[3]/div/div/div[3]/div[1]/div/div[1]/h3").text
         driver.quit()
 
         try:
