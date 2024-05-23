@@ -14,15 +14,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from fake_useragent import UserAgent
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+from fake_useragent import UserAgent
+from selenium.webdriver.support import expected_conditions as EC
 
 #######################################################################
 
@@ -50,7 +45,7 @@ def init():
 
     # Options to remove flags that show page is bot controlled
     options = Options()
-    options.add_experimental_option("detach",True)
+    options.add_experimental_option("detach", True)
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"]) 
     options.add_experimental_option("useAutomationExtension", False) 
@@ -63,8 +58,12 @@ def init():
     options.add_argument("--incognito")
 
     # Initialize Chrome Driver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
+    #chrome_version = '122.0.6261.129'
+    #driver = webdriver.Chrome(service=Service(ChromeDriverManager(version=chrome_version).install()), options=options)
 
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    
+    return driver
 
 
 
@@ -75,7 +74,7 @@ def main():
         airport_path = urls[i]
         driver.get(airport_path)
 
-        current = waitToLoad_storage("XPATH","/html/body/div[3]/div/div/div[3]/div[1]/div/div[1]/h3").text
+        current = waitToLoad_storage("XPATH","/html/body/div[2]/div/div/div[3]/div[1]/div/div[1]/h3").text
         driver.quit()
 
         try:
