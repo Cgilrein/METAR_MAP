@@ -5,7 +5,7 @@ import os.path
 from time import sleep
 import neopixel
 import board
-from errorHandler import errorHandler
+
 
 # Webdriver Imports ###################################################
 
