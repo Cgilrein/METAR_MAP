@@ -51,7 +51,8 @@ def init():
 
     # Initialize Firefox Driver
     service = FirefoxService(executable_path='/usr/local/bin/geckodriver')
-    driver = webdriver.Firefox(service=service, options=options)
+    #driver = webdriver.Firefox(service=service, options=options)
+    driver = webdriver.Firefox(executable_path='/usr/local/bin/geckodriver')
     
     return driver
 
@@ -59,10 +60,7 @@ def main():
     for i in range(len(urls)):
         airport_path = urls[i]
         driver.get(airport_path)
-        try:
-            current = waitToLoad_storage("XPATH", "/html/body/div[2]/div/div/div[3]/div[1]/div/div[1]/h3").text
-        except:
-            errorHandler("XPATH")
+        current = waitToLoad_storage("XPATH", "/html/body/div[2]/div/div/div[3]/div[1]/div/div[1]/h3").text
         driver.quit()
 
         try:
