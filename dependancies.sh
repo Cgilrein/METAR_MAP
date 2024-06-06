@@ -24,9 +24,14 @@ pip install numpy --break-system-packages
 
 # Function to download geckodriver
 download_geckodriver() {
-    GECKODRIVER_VERSION="v0.30.0"
-    GECKODRIVER_TAR="geckodriver-$GECKODRIVER_VERSION-linux-arm7.tar.gz"
+    #GECKODRIVER_VERSION="v0.30.0"
+    #GECKODRIVER_TAR="geckodriver-$GECKODRIVER_VERSION-linux-arm7.tar.gz"
+    #GECKODRIVER_URL="https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/$GECKODRIVER_TAR"
+
+    GECKODRIVER_VERSION="v0.33.0"
+    GECKODRIVER_TAR="geckodriver-$GECKODRIVER_VERSION-linux-aarch64.tar.gz"
     GECKODRIVER_URL="https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/$GECKODRIVER_TAR"
+
 
     echo "Checking URL: $GECKODRIVER_URL"
     if curl --output /dev/null --silent --head --fail "$GECKODRIVER_URL"; then
