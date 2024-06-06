@@ -24,9 +24,31 @@ pip install numpy --break-system-packages
 
 # Download and install geckodriver
 GECKODRIVER_VERSION="v0.30.0"
-wget "https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux-arm7.tar.gz"
-tar -xvzf "geckodriver-$GECKODRIVER_VERSION-linux-arm7.tar.gz"
+GECKODRIVER_TAR="geckodriver-$GECKODRIVER_VERSION-linux-arm7.tar.gz"
+GECKODRIVER_URL="https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/$GECKODRIVER_TAR"
+
+wget -O $GECKODRIVER_TAR $GECKODRIVER_URL
+if [ $? -ne 0 ]; then
+    echo "Failed to download geckodriver"
+    exit 1
+fi
+
+tar -xvzf $GECKODRIVER_TAR
+if [ $? -ne 0 ]; then
+    echo "Failed to extract geckodriver"
+    exit 1
+fi
+
 sudo mv geckodriver /usr/local/bin/
+if [ $? -ne 0 ]; then
+    echo "Failed to move geckodriver to /usr/local/bin/"
+    exit 1
+fi
+
 sudo chmod +x /usr/local/bin/geckodriver
+if [ $? -ne 0 ]; then
+    echo "Failed to make geckodriver executable"
+    exit 1
+fi
 
 echo "All libraries and geckodriver installed successfully."
