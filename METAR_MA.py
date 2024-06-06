@@ -52,7 +52,7 @@ def init():
     # Initialize Firefox Driver
     service = FirefoxService(executable_path='/usr/local/bin/geckodriver')
     #driver = webdriver.Firefox(service=service, options=options)
-    driver = webdriver.Firefox(executable_path='/usr/local/bin/geckodriver')
+    driver = webdriver.Firefox(service='/usr/local/bin/geckodriver')
     
     return driver
 
