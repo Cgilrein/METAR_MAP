@@ -27,24 +27,28 @@ GECKODRIVER_VERSION="v0.30.0"
 GECKODRIVER_TAR="geckodriver-$GECKODRIVER_VERSION-linux-arm7.tar.gz"
 GECKODRIVER_URL="https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/$GECKODRIVER_TAR"
 
+echo "Downloading geckodriver from $GECKODRIVER_URL"
 wget -O $GECKODRIVER_TAR $GECKODRIVER_URL
 if [ $? -ne 0 ]; then
     echo "Failed to download geckodriver"
     exit 1
 fi
 
+echo "Extracting geckodriver"
 tar -xvzf $GECKODRIVER_TAR
 if [ $? -ne 0 ]; then
     echo "Failed to extract geckodriver"
     exit 1
 fi
 
+echo "Moving geckodriver to /usr/local/bin/"
 sudo mv geckodriver /usr/local/bin/
 if [ $? -ne 0 ]; then
     echo "Failed to move geckodriver to /usr/local/bin/"
     exit 1
 fi
 
+echo "Making geckodriver executable"
 sudo chmod +x /usr/local/bin/geckodriver
 if [ $? -ne 0 ]; then
     echo "Failed to make geckodriver executable"
