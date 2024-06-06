@@ -10,30 +10,32 @@ import board
 # Webdriver Imports ###################################################
 
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from fake_useragent import UserAgent
 from selenium.webdriver.support import expected_conditions as EC
 
 #######################################################################
 
 # URL's that bot pulls from
-urls=['https://metar-taf.com/KPVC','https://metar-taf.com/KHYA','https://metar-taf.com/KACK','https://metar-taf.com/KMVY',
-'https://metar-taf.com/KPYM','https://metar-taf.com/KEWB','https://metar-taf.com/KOWD','https://metar-taf.com/KBOS',
-'https://metar-taf.com/KBED','https://metar-taf.com/KPSM','https://metar-taf.com/KSFM','https://metar-taf.com/KLCI',
-'https://metar-taf.com/KCON','https://metar-taf.com/KASH','https://metar-taf.com/KFIT','https://metar-taf.com/KORH',
-'https://metar-taf.com/KPVD','https://metar-taf.com/KBID','https://metar-taf.com/KGON','https://metar-taf.com/KIJD',
-'https://metar-taf.com/KBDL','https://metar-taf.com/KBAF','https://metar-taf.com/KCEF','https://metar-taf.com/KORE',
-'https://metar-taf.com/KEEN','https://metar-taf.com/KVSF','https://metar-taf.com/KGFL','https://metar-taf.com/KALB',
-'https://metar-taf.com/KAQW','https://metar-taf.com/KPSF','https://metar-taf.com/KPOU','https://metar-taf.com/KDXR',
-'https://metar-taf.com/KHVN']
+urls = ['https://metar-taf.com/KPVC', 'https://metar-taf.com/KHYA', 'https://metar-taf.com/KACK', 'https://metar-taf.com/KMVY',
+        'https://metar-taf.com/KPYM', 'https://metar-taf.com/KEWB', 'https://metar-taf.com/KOWD', 'https://metar-taf.com/KBOS',
+        'https://metar-taf.com/KBED', 'https://metar-taf.com/KPSM', 'https://metar-taf.com/KSFM', 'https://metar-taf.com/KLCI',
+        'https://metar-taf.com/KCON', 'https://metar-taf.com/KASH', 'https://metar-taf.com/KFIT', 'https://metar-taf.com/KORH',
+        'https://metar-taf.com/KPVD', 'https://metar-taf.com/KBID', 'https://metar-taf.com/KGON', 'https://metar-taf.com/KIJD',
+        'https://metar-taf.com/KBDL', 'https://metar-taf.com/KBAF', 'https://metar-taf.com/KCEF', 'https://metar-taf.com/KORE',
+        'https://metar-taf.com/KEEN', 'https://metar-taf.com/KVSF', 'https://metar-taf.com/KGFL', 'https://metar-taf.com/KALB',
+        'https://metar-taf.com/KAQW', 'https://metar-taf.com/KPSF', 'https://metar-taf.com/KPOU', 'https://metar-taf.com/KDXR',
+        'https://metar-taf.com/KHVN']
 
 interval = 600
 # Choose pin lights are connected to, along with total number of lights
-pixels = neopixel.NeoPixel(board.D18, 44) 
-pixels.fill((0,0,0)) # Start all lights as off
+pixels = neopixel.NeoPixel(board.D18, 44)
+pixels.fill((0, 0, 0))  # Start all lights as off
 
 def init():
     # Create Web Driver using options to remain under the radar
@@ -41,19 +43,24 @@ def init():
 
     # Options to remove flags that show page is bot controlled
     options = Options()
-    options.add_argument("--headless")
+    options.add_experimental_option("detach", True)
     options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"]) 
+    options.add_experimental_option("useAutomationExtension", False) 
 
     # Generate Random User Agent to prevent being detected
     ua = UserAgent()
     user_agent = ua.random
-    options.set_preference("general.useragent.override", user_agent)
+    options.add_argument(f'user-agent={user_agent}')
 
-    # Initialize Firefox Driver
-    service = FirefoxService(executable_path='/usr/local/bin/geckodriver')
-    #driver = webdriver.Firefox(service=service, options=options)
-    driver = webdriver.Firefox(service='/usr/local/bin/geckodriver')
-    
+    options.add_argument("--incognito")
+
+    # Initialize Chrome Driver
+    #chrome_version = '122.0.6261.129'
+    #driver = webdriver.Chrome(service=Service(ChromeDriverManager(version=chrome_version).install()), options=options)
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
     return driver
 
 def main():
@@ -65,20 +72,20 @@ def main():
 
         try:
             if current == 'VFR':
-                pixels[i] = (255,0,0)
+                pixels[i] = (255, 0, 0)
                 print("VFR")
             elif current == 'MVFR':
-                pixels[i] = (0,0,255)
+                pixels[i] = (0, 0, 255)
                 print("MVFR")
             elif current == 'IFR':
-                pixels[i] = (0,255,0)
+                pixels[i] = (0, 255, 0)
                 print("IFR")
             elif current == 'LIFR':
-                pixels[i] = (0,255,255)
+                pixels[i] = (0, 255, 255)
                 print("LIFR")
         except:
             print('Error Occurred')
-            pixels[i] = (0,0,0)
+            pixels[i] = (0, 0, 0)
 
 def waitToLoad_click(bytype, id):
     # Wait for <a> to load and then click
