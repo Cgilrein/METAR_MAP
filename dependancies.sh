@@ -45,6 +45,4 @@ sudo chmod +x /usr/local/bin/chromedriver
 # Verify the installation
 chromedriver --version
 
-echo "ChromeDriver installed successfully."
-
 echo "Script Completed"

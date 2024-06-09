@@ -31,16 +31,16 @@ urls = ['https://metar-taf.com/KPVC', 'https://metar-taf.com/KHYA', 'https://met
         'https://metar-taf.com/KEEN', 'https://metar-taf.com/KVSF', 'https://metar-taf.com/KGFL', 'https://metar-taf.com/KALB',
         'https://metar-taf.com/KAQW', 'https://metar-taf.com/KPSF', 'https://metar-taf.com/KPOU', 'https://metar-taf.com/KDXR',
         'https://metar-taf.com/KHVN']
+#######################################################################
 
 interval = 600
 # Choose pin lights are connected to, along with total number of lights
-pixels = neopixel.NeoPixel(board.D18, 44)
-pixels.fill((0, 0, 0))  # Start all lights as off
+#pixels = neopixel.NeoPixel(board.D18, 44)
+#pixels.fill((0, 0, 0))  # Start all lights as off
 
-def init():
-    # Create Web Driver using options to remain under the radar
-    global driver
+#######################################################################
 
+def webdriverCreate():
     # Options to remove flags that show page is bot controlled
     options = Options()
     options.add_experimental_option("detach", True)
@@ -55,64 +55,35 @@ def init():
 
     options.add_argument("--incognito")
 
-    # Initialize Chrome Driver
-    #chrome_version = '122.0.6261.129'
-    #driver = webdriver.Chrome(service=Service(ChromeDriverManager(version=chrome_version).install()), options=options)
-
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
     return driver
 
 def main():
     for i in range(len(urls)):
-        airport_path = urls[i]
-        driver.get(airport_path)
-        current = waitToLoad_storage("XPATH", "/html/body/div[2]/div/div/div[3]/div[1]/div/div[1]/h3").text
+        driver = webdriverCreate() # Initialize new webdriver to get past bot detection
+        airportURL = urls[i]
+        driver.get(airportURL)
+        current = waitToLoad_storage(driver,"XPATH", "/html/body/div[2]/div/div/div[3]/div[1]/div/div[1]/h3").text
         driver.quit()
 
         try:
             if current == 'VFR':
-                pixels[i] = (255, 0, 0)
+                #pixels[i] = (255, 0, 0)
                 print("VFR")
             elif current == 'MVFR':
-                pixels[i] = (0, 0, 255)
+                #pixels[i] = (0, 0, 255)
                 print("MVFR")
             elif current == 'IFR':
-                pixels[i] = (0, 255, 0)
+                #pixels[i] = (0, 255, 0)
                 print("IFR")
             elif current == 'LIFR':
-                pixels[i] = (0, 255, 255)
+                #pixels[i] = (0, 255, 255)
                 print("LIFR")
         except:
             print('Error Occurred')
-            pixels[i] = (0, 0, 0)
+           # pixels[i] = (0, 0, 0)
 
-def waitToLoad_click(bytype, id):
-    # Wait for <a> to load and then click
-    for i in range(3):
-        try:
-            if bytype == "XPATH":
-                WebDriverWait(driver, timeout=5).until(EC.presence_of_element_located((By.XPATH, id)))
-                driver.find_element(By.XPATH, id).click()
-            elif bytype == "ID":
-                WebDriverWait(driver, timeout=5).until(EC.presence_of_element_located((By.ID, id)))
-                driver.find_element(By.ID, id).click()
-            elif bytype == "LINK_TEXT":
-                WebDriverWait(driver, timeout=5).until(EC.presence_of_element_located((By.LINK_TEXT, id)))
-                driver.find_element(By.LINK_TEXT, id).click()
-            elif bytype == "CLASS_NAME":
-                WebDriverWait(driver, timeout=5).until(EC.presence_of_element_located((By.CLASS_NAME, id)))
-                driver.find_element(By.LINK_TEXT, id).click()
-            elif bytype == "CSS":
-                WebDriverWait(driver, timeout=5).until(EC.presence_of_element_located((By.CSS_SELECTOR, id)))
-                driver.find_element(By.LINK_TEXT, id).click()
-            elif bytype == "TAG_NAME":
-                WebDriverWait(driver, timeout=5).until(EC.presence_of_element_located((By.TAG_NAME, id)))
-                driver.find_element(By.TAG_NAME, id).click()
-        except:
-            sleep(1)
-
-def waitToLoad_storage(bytype, id):
+def waitToLoad_storage(driver, bytype, id):
     # Wait for <a> to load and then return element
     for i in range(3):
         try:
@@ -138,7 +109,6 @@ def waitToLoad_storage(bytype, id):
             sleep(1)
 
 if __name__ == "__main__":
-    init()
     while True:
         main()
         sleep(interval)
